@@ -1,3 +1,8 @@
+# AeroSpace — tiling window manager for macOS
+#
+# Bindings are alt-based throughout: alt to focus, alt-shift to move. The
+# service mode (alt-shift-;) holds the rarely used actions so they do not
+# consume a top-level binding; every service binding returns to main mode.
 _: {
   programs.aerospace = {
     enable = true;
@@ -6,6 +11,7 @@ _: {
     settings = {
       start-at-login = true;
 
+      # Layout
       accordion-padding = 30;
       default-root-container-layout = "tiles";
 
@@ -19,22 +25,27 @@ _: {
       };
 
       mode.main.binding = {
+        # Switch layout
         alt-slash = "layout tiles horizontal vertical";
         alt-comma = "layout accordion horizontal vertical";
 
+        # Focus
         alt-h = "focus left";
         alt-j = "focus down";
         alt-k = "focus up";
         alt-l = "focus right";
 
+        # Move the focused window
         alt-shift-h = "move left";
         alt-shift-j = "move down";
         alt-shift-k = "move up";
         alt-shift-l = "move right";
 
+        # Resize
         alt-minus = "resize smart -50";
         alt-equal = "resize smart +50";
 
+        # Go to workspace
         alt-1 = "workspace 1";
         alt-2 = "workspace 2";
         alt-3 = "workspace 3";
@@ -44,6 +55,7 @@ _: {
         alt-7 = "workspace 7";
         alt-8 = "workspace 8";
 
+        # Send the focused window to a workspace
         alt-shift-1 = "move-node-to-workspace 1";
         alt-shift-2 = "move-node-to-workspace 2";
         alt-shift-3 = "move-node-to-workspace 3";
@@ -53,11 +65,13 @@ _: {
         alt-shift-7 = "move-node-to-workspace 7";
         alt-shift-8 = "move-node-to-workspace 8";
 
+        # Monitors and modes
         alt-tab = "workspace-back-and-forth";
         alt-shift-tab = "move-workspace-to-monitor --wrap-around next";
         alt-shift-semicolon = "mode service";
       };
 
+      # Service mode: entered with alt-shift-;, each action returns to main.
       mode.service.binding = {
         esc = [
           "reload-config"
@@ -93,6 +107,7 @@ _: {
         ];
       };
 
+      # Windows that misbehave when tiled.
       on-window-detected = [
         {
           "if" = {

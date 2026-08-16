@@ -60,6 +60,12 @@
       # mini.pick dependencies
       ripgrep
       fd
+      # Debug adapters
+      delve
+      vscode-js-debug
+      (python3.withPackages (ps: [ ps.debugpy ]))
+      # AI assistance, driven from a toggleterm float
+      inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code
     ];
   };
 }

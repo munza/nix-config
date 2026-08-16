@@ -1,252 +1,105 @@
+# Neovim keymaps
+#
+# Grouped by what they act on. Leader is <space>; the <leader>v family is a
+# small language of its own, documented at the bottom.
 _:
 
+let
+  # `vi(`, `vf,` and friends need a character before they can run, so each of
+  # these prompts for one and replays the motion. Wrapping them keeps the
+  # prompt-then-replay logic in one place instead of six near-identical blobs.
+  selectPrompting = key: motion: desc: {
+    mode = "n";
+    inherit key;
+    action.__raw = "function() local c=vim.fn.getcharstr(); if c~='' then vim.cmd('normal! ${motion}'..c) end end";
+    options.desc = desc;
+  };
+
+  # Named for the mode it binds in, and so it does not shadow builtins.map.
+  nmap = key: action: desc: {
+    mode = "n";
+    inherit key action;
+    options.desc = desc;
+  };
+in
 {
   programs.nixvim.keymaps = [
-    {
-      mode = "n";
-      key = "<leader>e";
-      action = "<cmd>lua MiniFiles.open()<CR>";
-      options.desc = "Toggle file explorer";
-    }
-    {
-      mode = "n";
-      key = "<leader>ff";
-      action = "<cmd>lua MiniPick.builtin.files()<CR>";
-      options.desc = "Find files";
-    }
-    {
-      mode = "n";
-      key = "<leader>fg";
-      action = "<cmd>lua MiniPick.builtin.grep_live()<CR>";
-      options.desc = "Live grep";
-    }
-    {
-      mode = "n";
-      key = "<leader>fb";
-      action = "<cmd>lua MiniPick.builtin.buffers()<CR>";
-      options.desc = "Find buffers";
-    }
-    {
-      mode = "n";
-      key = "<leader>fh";
-      action = "<cmd>lua MiniPick.builtin.help()<CR>";
-      options.desc = "Help tags";
-    }
-    {
-      mode = "n";
-      key = "<leader>fr";
-      action = "<cmd>lua MiniExtra.pickers.oldfiles()<CR>";
-      options.desc = "Recent files";
-    }
-    {
-      mode = "n";
-      key = "<leader>fd";
-      action = "<cmd>lua MiniExtra.pickers.diagnostic()<CR>";
-      options.desc = "Diagnostics";
-    }
-    {
-      mode = "n";
-      key = "gd";
-      action = "<cmd>lua vim.lsp.buf.definition()<CR>";
-      options.desc = "Go to definition";
-    }
-    {
-      mode = "n";
-      key = "gr";
-      action = "<cmd>lua MiniExtra.pickers.lsp({ scope = 'references' })<CR>";
-      options.desc = "References";
-    }
-    {
-      mode = "n";
-      key = "K";
-      action = "<cmd>lua vim.lsp.buf.hover()<CR>";
-      options.desc = "Hover docs";
-    }
-    {
-      mode = "n";
-      key = "<leader>ca";
-      action = "<cmd>lua vim.lsp.buf.code_action()<CR>";
-      options.desc = "Code action";
-    }
-    {
-      mode = "n";
-      key = "<leader>rn";
-      action = "<cmd>lua vim.lsp.buf.rename()<CR>";
-      options.desc = "Rename";
-    }
-    {
-      mode = "n";
-      key = "<leader>d";
-      action = "<cmd>lua vim.diagnostic.open_float()<CR>";
-      options.desc = "Line diagnostics";
-    }
-    {
-      mode = "n";
-      key = "[d";
-      action = "<cmd>lua vim.diagnostic.goto_prev()<CR>";
-      options.desc = "Prev diagnostic";
-    }
-    {
-      mode = "n";
-      key = "]d";
-      action = "<cmd>lua vim.diagnostic.goto_next()<CR>";
-      options.desc = "Next diagnostic";
-    }
-    {
-      mode = "n";
-      key = "<leader>cf";
-      action = "<cmd>lua require('conform').format()<CR>";
-      options.desc = "Format file";
-    }
-    {
-      mode = "n";
-      key = "<leader>gg";
-      action = "<cmd>LazyGit<CR>";
-      options.desc = "LazyGit";
-    }
-    {
-      mode = "n";
-      key = "<S-h>";
-      action = "<cmd>bprev<CR>";
-      options.desc = "Prev buffer";
-    }
-    {
-      mode = "n";
-      key = "<S-l>";
-      action = "<cmd>bnext<CR>";
-      options.desc = "Next buffer";
-    }
-    {
-      mode = "n";
-      key = "<leader>bd";
-      action = "<cmd>bd<CR>";
-      options.desc = "Delete buffer";
-    }
-    {
-      mode = "n";
-      key = "<leader>vw";
-      action = "vw";
-      options.desc = "Select to next word";
-    }
-    {
-      mode = "n";
-      key = "<leader>ve";
-      action = "ve";
-      options.desc = "Select to end of word";
-    }
-    {
-      mode = "n";
-      key = "<leader>vb";
-      action = "vb";
-      options.desc = "Select to prev word";
-    }
-    {
-      mode = "n";
-      key = "<leader>vj";
-      action = "vj";
-      options.desc = "Select line down";
-    }
-    {
-      mode = "n";
-      key = "<leader>vk";
-      action = "vk";
-      options.desc = "Select line up";
-    }
-    {
-      mode = "n";
-      key = "<leader>vl";
-      action = "v$";
-      options.desc = "Select to line end";
-    }
-    {
-      mode = "n";
-      key = "<leader>vh";
-      action = "v0";
-      options.desc = "Select to line start";
-    }
-    {
-      mode = "n";
-      key = "<leader>vv";
-      action = "V";
-      options.desc = "Select entire line";
-    }
-    {
-      mode = "n";
-      key = "<leader>vi";
-      action.__raw = "function() local c=vim.fn.getcharstr(); if c~='' then vim.cmd('normal! vi'..c) end end";
-      options.desc = "Select inside…";
-    }
-    {
-      mode = "n";
-      key = "<leader>va";
-      action.__raw = "function() local c=vim.fn.getcharstr(); if c~='' then vim.cmd('normal! va'..c) end end";
-      options.desc = "Select around…";
-    }
-    {
-      mode = "n";
-      key = "<leader>vf";
-      action.__raw = "function() local c=vim.fn.getcharstr(); if c~='' then vim.cmd('normal! vf'..c) end end";
-      options.desc = "Select until char (inclusive)";
-    }
-    {
-      mode = "n";
-      key = "<leader>vt";
-      action.__raw = "function() local c=vim.fn.getcharstr(); if c~='' then vim.cmd('normal! vt'..c) end end";
-      options.desc = "Select till char (exclusive)";
-    }
-    {
-      mode = "n";
-      key = "<leader>vF";
-      action.__raw = "function() local c=vim.fn.getcharstr(); if c~='' then vim.cmd('normal! vF'..c) end end";
-      options.desc = "Select until char backward (inclusive)";
-    }
-    {
-      mode = "n";
-      key = "<leader>vT";
-      action.__raw = "function() local c=vim.fn.getcharstr(); if c~='' then vim.cmd('normal! vT'..c) end end";
-      options.desc = "Select till char backward (exclusive)";
-    }
-    {
-      mode = "n";
-      key = "<leader>vs";
-      action = "vis";
-      options.desc = "Select current sentence";
-    }
-    {
-      mode = "n";
-      key = "<leader>vW";
-      action = "viW";
-      options.desc = "Select current WORD";
-    }
-    {
-      mode = "n";
-      key = "<Esc>";
-      action = "<cmd>nohlsearch<CR>";
-      options.desc = "Clear search highlights";
-    }
-    {
-      mode = "n";
-      key = "<C-h>";
-      action = "<C-w>h";
-      options.desc = "Move to left window";
-    }
-    {
-      mode = "n";
-      key = "<C-j>";
-      action = "<C-w>j";
-      options.desc = "Move to bottom window";
-    }
-    {
-      mode = "n";
-      key = "<C-k>";
-      action = "<C-w>k";
-      options.desc = "Move to top window";
-    }
-    {
-      mode = "n";
-      key = "<C-l>";
-      action = "<C-w>l";
-      options.desc = "Move to right window";
-    }
+    # ── Files and pickers ───────────────────────────────────────────────
+    (nmap "<leader>e" "<cmd>lua MiniFiles.open()<CR>" "Toggle file explorer")
+    (nmap "<leader>ff" "<cmd>lua MiniPick.builtin.files()<CR>" "Find files")
+    (nmap "<leader>fg" "<cmd>lua MiniPick.builtin.grep_live()<CR>" "Live grep")
+    (nmap "<leader>fb" "<cmd>lua MiniPick.builtin.buffers()<CR>" "Find buffers")
+    (nmap "<leader>fh" "<cmd>lua MiniPick.builtin.help()<CR>" "Help tags")
+    (nmap "<leader>fr" "<cmd>lua MiniExtra.pickers.oldfiles()<CR>" "Recent files")
+    (nmap "<leader>fd" "<cmd>lua MiniExtra.pickers.diagnostic()<CR>" "Diagnostics")
+
+    # ── LSP ─────────────────────────────────────────────────────────────
+    (nmap "gd" "<cmd>lua vim.lsp.buf.definition()<CR>" "Go to definition")
+    (nmap "gr" "<cmd>lua MiniExtra.pickers.lsp({ scope = 'references' })<CR>" "References")
+    (nmap "K" "<cmd>lua vim.lsp.buf.hover()<CR>" "Hover docs")
+    (nmap "<leader>ca" "<cmd>lua vim.lsp.buf.code_action()<CR>" "Code action")
+    (nmap "<leader>rn" "<cmd>lua vim.lsp.buf.rename()<CR>" "Rename")
+
+    # ── Diagnostics ─────────────────────────────────────────────────────
+    (nmap "<leader>cd" "<cmd>lua vim.diagnostic.open_float()<CR>" "Line diagnostics")
+    (nmap "[d" "<cmd>lua vim.diagnostic.goto_prev()<CR>" "Prev diagnostic")
+    (nmap "]d" "<cmd>lua vim.diagnostic.goto_next()<CR>" "Next diagnostic")
+
+    # ── Formatting and git ──────────────────────────────────────────────
+    (nmap "<leader>cf" "<cmd>lua require('conform').format()<CR>" "Format file")
+    (nmap "<leader>gg" "<cmd>LazyGit<CR>" "LazyGit")
+
+    # ── Buffers and windows ─────────────────────────────────────────────
+    (nmap "<S-h>" "<cmd>bprev<CR>" "Prev buffer")
+    (nmap "<S-l>" "<cmd>bnext<CR>" "Next buffer")
+    (nmap "<leader>bd" "<cmd>bd<CR>" "Delete buffer")
+    (nmap "<C-h>" "<C-w>h" "Move to left window")
+    (nmap "<C-j>" "<C-w>j" "Move to bottom window")
+    (nmap "<C-k>" "<C-w>k" "Move to top window")
+    (nmap "<C-l>" "<C-w>l" "Move to right window")
+
+    # ── Debug (<leader>d) ───────────────────────────────────────────────
+    # <leader>d was line diagnostics; that moved to <leader>cd so this prefix
+    # can follow the usual dap convention.
+    (nmap "<leader>db" "<cmd>lua require('dap').toggle_breakpoint()<CR>" "Toggle breakpoint")
+    (nmap "<leader>dB" "<cmd>lua require('dap').set_breakpoint(vim.fn.input('Condition: '))<CR>"
+      "Conditional breakpoint"
+    )
+    (nmap "<leader>dc" "<cmd>lua require('dap').continue()<CR>" "Continue / start")
+    (nmap "<leader>di" "<cmd>lua require('dap').step_into()<CR>" "Step into")
+    (nmap "<leader>do" "<cmd>lua require('dap').step_over()<CR>" "Step over")
+    (nmap "<leader>dO" "<cmd>lua require('dap').step_out()<CR>" "Step out")
+    (nmap "<leader>dr" "<cmd>lua require('dap').repl.toggle()<CR>" "Toggle REPL")
+    (nmap "<leader>du" "<cmd>lua require('dapui').toggle()<CR>" "Toggle debug UI")
+    (nmap "<leader>dx" "<cmd>lua require('dap').terminate()<CR>" "Terminate session")
+
+    # ── AI (<leader>a) ──────────────────────────────────────────────────
+    # claude-code in a float; it keeps its own login, so nvim holds no key.
+    (nmap "<leader>ac" "<cmd>lua _CLAUDE_CODE:toggle()<CR>" "Toggle claude-code")
+
+    # ── Search ──────────────────────────────────────────────────────────
+    (nmap "<Esc>" "<cmd>nohlsearch<CR>" "Clear search highlights")
+
+    # ── Selection (<leader>v) ───────────────────────────────────────────
+    # Visual mode without reaching for v first: the second key is the motion
+    # it would have taken, so <leader>vw is `vw`, <leader>vl is `v$`.
+    (nmap "<leader>vw" "vw" "Select to next word")
+    (nmap "<leader>ve" "ve" "Select to end of word")
+    (nmap "<leader>vb" "vb" "Select to prev word")
+    (nmap "<leader>vj" "vj" "Select line down")
+    (nmap "<leader>vk" "vk" "Select line up")
+    (nmap "<leader>vl" "v$" "Select to line end")
+    (nmap "<leader>vh" "v0" "Select to line start")
+    (nmap "<leader>vv" "V" "Select entire line")
+    (nmap "<leader>vs" "vis" "Select current sentence")
+    (nmap "<leader>vW" "viW" "Select current WORD")
+
+    # These wait for a character: <leader>vi( selects inside the parens.
+    (selectPrompting "<leader>vi" "vi" "Select inside…")
+    (selectPrompting "<leader>va" "va" "Select around…")
+    (selectPrompting "<leader>vf" "vf" "Select until char (inclusive)")
+    (selectPrompting "<leader>vt" "vt" "Select till char (exclusive)")
+    (selectPrompting "<leader>vF" "vF" "Select until char backward (inclusive)")
+    (selectPrompting "<leader>vT" "vT" "Select till char backward (exclusive)")
   ];
 }
