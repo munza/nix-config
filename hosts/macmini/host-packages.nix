@@ -77,13 +77,13 @@
       "linear"
       "llama-app"
       "nordpass"
-      "octarine"
       "orbstack"
       "proton-drive"
       "proton-pass"
       "protonvpn"
       "raycast"
       "slack"
+      "tolaria"
       "tailscale-app"
       "zed"
       "zen"
@@ -92,6 +92,9 @@
   };
 
   fonts = with pkgs; [
-    maple-mono.NF-unhinted
+    inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.annotation-mono
+    # Icon glyphs for fonts that ship no patched build, used as a fallback
+    # family rather than baked into each font.
+    nerd-fonts.symbols-only
   ];
 }

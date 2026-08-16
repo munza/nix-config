@@ -2,24 +2,52 @@ _: {
   programs.zed-editor = {
     enable = true;
 
-    userKeymaps = [
-      {
-        context = "ProjectPanel && not_editing";
-        bindings = {
-          "q" = "workspace::ToggleLeftDock";
-        };
-      }
-      {
-        context = "GitPanel";
-        bindings = {
-          "q" = "workspace::ToggleLeftDock";
-        };
-      }
-    ];
+    userKeymaps = [ ];
 
     userSettings = {
-      edit_predictions = {
-        provider = "copilot";
+      # ── Appearance ──────────────────────────────────────────────────────
+      theme = {
+        mode = "system";
+        light = "Dayfox - opaque";
+        dark = "Terafox - opaque";
+      };
+
+      # Icons come from the fallback family; see modules/home/ghostty.nix.
+      ui_font_family = "Annotation Mono";
+      ui_font_fallbacks = [ "Symbols Nerd Font Mono" ];
+      ui_font_size = 16;
+
+      buffer_font_family = "Annotation Mono";
+      buffer_font_fallbacks = [ "Symbols Nerd Font Mono" ];
+      buffer_font_size = 15;
+      buffer_line_height = {
+        custom = 1.6;
+      };
+
+      agent_ui_font_size = 16;
+      agent_buffer_font_size = 15;
+
+      # ── Editing ─────────────────────────────────────────────────────────
+      vim_mode = true;
+      vim = {
+        cursor_shape = {
+          normal = "hollow";
+          insert = "bar";
+        };
+        toggle_relative_line_numbers = true;
+      };
+
+      tab_size = 2;
+      format_on_save = "on";
+
+      # ── Panels and docks ────────────────────────────────────────────────
+      project_panel = {
+        hide_hidden = false;
+        hide_gitignore = false;
+        hide_root = true;
+        folder_icons = false;
+        file_icons = true;
+        entry_spacing = "comfortable";
       };
 
       outline_panel = {
@@ -34,7 +62,13 @@ _: {
         dock = "bottom";
       };
 
+      # ── AI ──────────────────────────────────────────────────────────────
+      edit_predictions = {
+        provider = "copilot";
+      };
+
       agent = {
+        # Send on cmd-enter, so plain enter inserts a newline.
         use_modifier_to_send = true;
       };
 
@@ -43,47 +77,12 @@ _: {
         metrics = false;
       };
 
-      project_panel = {
-        hide_hidden = false;
-        folder_icons = false;
-        file_icons = true;
-        entry_spacing = "comfortable";
-        hide_gitignore = false;
-        hide_root = true;
-      };
-
-      vim_mode = true;
-      vim = {
-        cursor_shape = {
-          normal = "hollow";
-          insert = "bar";
-        };
-        toggle_relative_line_numbers = true;
-      };
-
-      ui_font_size = 16;
-      ui_font_family = "AnnotationM Nerd Font";
-      buffer_font_size = 15;
-      buffer_font_family = "AnnotationM Nerd Font";
-      agent_ui_font_size = 16;
-      agent_buffer_font_size = 15;
-      buffer_line_height = {
-        custom = 1.6;
-      };
-
-      theme = {
-        mode = "system";
-        light = "Dayfox - opaque";
-        dark = "Terafox - opaque";
-      };
-
+      # ── Languages ───────────────────────────────────────────────────────
+      # Per-language overrides; everything else takes the defaults above.
       languages = {
         Astro = {
           formatter = "language_server";
           tab_size = 2;
-        };
-        Rust = {
-          tab_size = 4;
         };
         Lua = {
           formatter = {
@@ -100,15 +99,13 @@ _: {
           };
         };
         Nix = {
+          # nixd over nil: it resolves flake attrs, nil does not.
           language_servers = [
             "nixd"
             "!nil"
           ];
         };
       };
-
-      tab_size = 2;
-      format_on_save = "on";
 
       lsp = {
         nixd = {

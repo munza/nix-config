@@ -19,7 +19,6 @@ _: {
       };
 
       mode.main.binding = {
-
         alt-slash = "layout tiles horizontal vertical";
         alt-comma = "layout accordion horizontal vertical";
 
@@ -55,9 +54,7 @@ _: {
         alt-shift-8 = "move-node-to-workspace 8";
 
         alt-tab = "workspace-back-and-forth";
-
         alt-shift-tab = "move-workspace-to-monitor --wrap-around next";
-
         alt-shift-semicolon = "mode service";
       };
 
@@ -78,7 +75,6 @@ _: {
           "close-all-windows-but-current"
           "mode main"
         ];
-
         alt-shift-h = [
           "join-with left"
           "mode main"
