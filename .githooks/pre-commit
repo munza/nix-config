@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Block commits that contain credentials. Local backstop for GitHub's push
+# protection: this catches a paste before it ever reaches a remote.
+#
+# Enable once per clone (git does not track hook config):
+#   git config core.hooksPath .githooks
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "pre-commit: gitleaks not found, skipping secret scan" >&2
+  exit 0
+fi
+
+if ! gitleaks git --staged --redact --no-banner --verbose; then
+  cat >&2 <<'MSG'
+
+pre-commit: gitleaks found a potential secret in the staged changes.
+
+Unstage it, or if it is a false positive, annotate the line with:
+  # gitleaks:allow
+MSG
+  exit 1
+fi
