@@ -62,7 +62,7 @@ let
       };
       user = { inherit homeDirectory; };
       nix.builder = if isDarwin then "darwin-rebuild" else "nixos-rebuild";
-      paths.dotfiles = "${homeDirectory}/.nix-config";
+      paths.config = "${homeDirectory}/.nix-config";
       # Hosts that have not had their key generated yet cannot be secret
       # recipients; `nix-secret sync-keys` skips them.
       machine.sshPublicKeyFile = null;

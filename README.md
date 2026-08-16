@@ -15,6 +15,7 @@ Built with [blueprint](https://github.com/numtide/blueprint) for auto-discovery 
 ├── lib/
 │   └── default.nix            # flake.lib.hostVars — loads + validates host variables
 ├── scripts/                   # shell scripts sourced by zsh-functions
+│   ├── nix-util.sh            # everyday nix operations
 │   └── nix-secret.sh          # sops secret manager
 ├── modules/
 │   ├── darwin/
@@ -97,7 +98,7 @@ Each host has a `variables.nix` that defines everything unique to that machine:
 Files are loaded through `flake.lib.hostVars <name>` (see [`lib/default.nix`](lib/default.nix)), which
 
 - **fails with a named error** if a required field (`host.platform`, `user.{name,fullName,email}`, `stateVersion.{system,home}`) is missing, instead of erroring deep inside some module, and
-- **derives the rest** so no host has to repeat it: `host.name` (from the directory name), `host.isDarwin` / `host.isLinux`, `user.homeDirectory` (`/Users/<n>` or `/home/<n>`), `nix.builder` (`darwin-rebuild` or `nixos-rebuild`), and `paths.dotfiles`.
+- **derives the rest** so no host has to repeat it: `host.name` (from the directory name), `host.isDarwin` / `host.isLinux`, `user.homeDirectory` (`/Users/<n>` or `/home/<n>`), `nix.builder` (`darwin-rebuild` or `nixos-rebuild`), and `paths.config`.
 
 Modules receive the resulting attrset as the `var` module argument.
 
@@ -130,6 +131,41 @@ Controls what gets installed and which home-manager modules are enabled:
   };
 }
 ```
+
+### Everyday Commands (`nix-util`)
+
+All routine Nix operations go through one command rather than a pile of
+aliases. It always acts on this flake and the current host, so it works from any
+directory. Run it bare for a menu.
+
+```sh
+nix-util                  # interactive menu
+nix-util rebuild          # build and switch this host
+nix-util update           # update every flake input
+nix-util update nixpkgs   # update one input
+nix-util search ripgrep   # search nixpkgs
+nix-util check            # nix flake check --all-systems --no-build
+nix-util check -v         # ... and show nix's warnings
+nix-util fmt              # format the repo with treefmt
+nix-util diff             # uncommitted flake.lock diff
+nix-util generations      # list system generations
+nix-util rollback         # switch back to the previous generation
+nix-util clean            # collect garbage (user + root) and optimise the store
+```
+
+`nix-util update` deliberately does more than `nix flake update`: it shows what
+moved in `flake.lock`, offers the full diff, and then runs the flake check, so a
+bad input is caught before it becomes a root activation. `nix-util clean`
+collects garbage in both the user and root profiles — only the latter frees
+system closures — keeping generations newer than 30 days (override with
+`NIX_GC_DAYS`). `nix-util check` hides Nix's warnings — blueprint emits flake
+outputs Nix does not recognise, so even a clean run is noisy — pass `-v` to see
+them.
+
+The command lives in [`scripts/nix-util.sh`](scripts/nix-util.sh) and is sourced
+by [`zsh-functions.nix`](modules/home/zsh-functions.nix), which sets the
+`FLAKE_DIR`, `NIX_BUILDER` and `NIX_HOST` it reads. Secrets are a separate
+concern; see [`nix-secret`](#secrets-sops-nix).
 
 ### Formatting
 
@@ -215,7 +251,7 @@ secrets/macmini.json     # readable by macmini only
 secrets/<hostname>.json  # one per host, created on demand
 ```
 
-> **A secret is not live until the flake input is bumped.** The dotfiles flake
+> **A secret is not live until the flake input is bumped.** This flake
 > pins the secrets repo by revision, so editing a secret is not enough — you
 > must commit, push, and bump. `nix-secret sync` does all three, and every
 > mutating command reminds you to run it.
@@ -300,9 +336,9 @@ first-time build. Mark a false positive with a `# gitleaks:allow` comment on the
 offending line.
 
 **3. Review the lock diff before switching.** A rebuild runs every flake input's
-code as root, so `flake.lock` is the supply-chain surface. `nix-update` prints
-`git diff --stat flake.lock` between the update and the check; `nix-lock-diff`
-shows the full diff. Skim which inputs moved before `nix-rebuild`.
+code as root, so `flake.lock` is the supply-chain surface. `nix-util update`
+prints the lock diffstat, offers the full diff, and only then runs the check —
+skim which inputs moved before `nix-util rebuild`.
 
 If you cloned this repo, also check that you repointed the `secrets` input at
 your own private repo (see [Secrets](#secrets-sops-nix)) — otherwise the build
@@ -322,7 +358,7 @@ tries to fetch a repo you cannot read.
 
 3. Run `nix-secret sync-keys` to add the host to `.sops.yaml` and rekey.
 
-4. Build and switch with `darwin-rebuild`/`nixos-rebuild switch --flake ~/.nix-config#<name>` (the `nix-rebuild` alias does this for the current host).
+4. Build and switch with `darwin-rebuild`/`nixos-rebuild switch --flake ~/.nix-config#<name>` (`nix-util rebuild` does this for the current host).
 
 ### Home Manager Modules (`modules/home/`)
 

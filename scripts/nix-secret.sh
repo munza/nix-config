@@ -7,7 +7,7 @@
 # hosts/*/variables.nix by `nix-secret sync-keys`.
 #
 # This operates on a local checkout of that repo, cloned on demand. Because the
-# dotfiles flake pins it by revision, a change is not live until the input is
+# config flake pins it by revision, a change is not live until the input is
 # bumped — `nix-secret sync` commits, pushes and bumps in one step.
 #
 # USAGE:
@@ -23,18 +23,18 @@
 #   nix-secret rekey          — re-encrypt after recipients change
 #   nix-secret sync-keys      — regenerate .sops.yaml from hosts/*/variables.nix
 
-: "${DOTFILES:?DOTFILES is not set}"
+: "${FLAKE_DIR:?FLAKE_DIR is not set}"
 
-# Working checkout of the private secrets repo; not inside $DOTFILES so its
+# Working checkout of the private secrets repo; not inside $FLAKE_DIR so its
 # ciphertext never lands in the public repo.
 readonly SECRETS_REPO="${NIX_SECRETS_DIR:-$HOME/.nix-secret}"
 readonly SECRETS_DIR="$SECRETS_REPO/secrets"
-readonly HOSTS_DIR="$DOTFILES/hosts"
+readonly HOSTS_DIR="$FLAKE_DIR/hosts"
 readonly SOPS_CONFIG="$SECRETS_REPO/.sops.yaml"
 
-# The dotfiles flake is the single source of truth for where secrets live.
+# The config flake is the single source of truth for where secrets live.
 _secrets_url() {
-  nix flake metadata "$DOTFILES" --json 2>/dev/null |
+  nix flake metadata "$FLAKE_DIR" --json 2>/dev/null |
     python3 -c 'import json,sys
 n = json.load(sys.stdin)["locks"]["nodes"]
 print(n["secrets"]["original"]["url"] if "secrets" in n else "")' 2>/dev/null
@@ -48,7 +48,7 @@ _ensure_repo() {
 
   url=$(_secrets_url)
   if [ -z "$url" ]; then
-    _err "no 'secrets' input in $DOTFILES/flake.nix — nothing to clone"
+    _err "no 'secrets' input in $FLAKE_DIR/flake.nix — nothing to clone"
     return 1
   fi
 
@@ -57,7 +57,7 @@ _ensure_repo() {
 }
 
 # sops discovers .sops.yaml by walking up from $PWD, so without --config
-# nix-secret only works from inside $DOTFILES. Every call goes through here.
+# nix-secret only works from inside $FLAKE_DIR. Every call goes through here.
 _sops() { sops --config "$SOPS_CONFIG" "$@"; }
 
 _err() { gum style --foreground 1 "$*"; }
@@ -164,7 +164,7 @@ _ns_pull() {
   _ok "secrets checkout up to date"
 }
 
-# Publish local secret changes and point the dotfiles flake at them. Skipping
+# Publish local secret changes and point the config flake at them. Skipping
 # the bump is the most confusing possible failure: the secret exists, is
 # committed, and still does not appear after a rebuild.
 _ns_sync() {
@@ -179,12 +179,12 @@ _ns_sync() {
     _ok "pushed secret changes"
   fi
 
-  if ! (cd "$DOTFILES" && nix flake update secrets); then
+  if ! (cd "$FLAKE_DIR" && nix flake update secrets); then
     _err "failed to bump the secrets input"
     return 1
   fi
 
-  _ok "flake input bumped — run 'nix-secret sync' then 'nix-rebuild'"
+  _ok "flake input bumped — run 'nix-secret sync' then 'nix-util rebuild'"
 }
 
 # Write a value without it ever appearing in argv.
@@ -233,7 +233,7 @@ _ns_add() {
   # Drop the bootstrap placeholder once a real secret is in the file.
   _sops unset "$file" '["_placeholder"]' 2>/dev/null || true
 
-  _ok "added '$name' to $scope — run 'nix-secret sync' then 'nix-rebuild'"
+  _ok "added '$name' to $scope — run 'nix-secret sync' then 'nix-util rebuild'"
 }
 
 _ns_read() {
@@ -280,7 +280,7 @@ _ns_edit() {
   [ -z "$scope" ] && return 1
 
   file=$(_scope_file "$scope")
-  _sops edit "$file" && _ok "edited $scope — run 'nix-secret sync' then 'nix-rebuild'"
+  _sops edit "$file" && _ok "edited $scope — run 'nix-secret sync' then 'nix-util rebuild'"
 }
 
 _ns_update() {
@@ -303,7 +303,7 @@ _ns_update() {
     return 1
   fi
 
-  _ok "updated '$name' — run 'nix-secret sync' then 'nix-rebuild'"
+  _ok "updated '$name' — run 'nix-secret sync' then 'nix-util rebuild'"
 }
 
 _ns_remove() {
@@ -325,7 +325,7 @@ _ns_remove() {
     return 1
   fi
 
-  _ok "removed '$name' — run 'nix-secret sync' then 'nix-rebuild'"
+  _ok "removed '$name' — run 'nix-secret sync' then 'nix-util rebuild'"
 }
 
 _ns_rekey() {

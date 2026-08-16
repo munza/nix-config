@@ -1,6 +1,5 @@
 {
   pkgs,
-  var,
   ...
 }:
 
@@ -35,12 +34,10 @@
       }
     ];
 
+    # Nix operations live in the `nix-util` command (scripts/nix-util.sh), not in aliases.
     shellAliases = {
-      nix-rebuild = "sudo ${var.nix.builder} switch --flake '${var.paths.dotfiles}#${var.host.name}'";
-      # Show what moved in flake.lock before trusting it: a rebuild runs input
-      # code as root, so the lock diff is the supply-chain review surface.
-      nix-update = "cd ${var.paths.dotfiles} && nix flake update && git diff --stat flake.lock && nix flake check --all-systems --no-build";
-      nix-lock-diff = "git -C ${var.paths.dotfiles} diff flake.lock";
+      nx = "nix-util";
+      nxs = "nix-secret";
       ll = "ls -lah";
       ".." = "cd ..";
       "..." = "cd ../..";
