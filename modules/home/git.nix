@@ -1,6 +1,17 @@
 { var, ... }:
 
 {
+  # Syntax-highlighted diffs everywhere git shows one, lazygit included.
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      navigate = true;
+      line-numbers = true;
+      hyperlinks = true;
+    };
+  };
+
   programs.git = {
     enable = true;
 

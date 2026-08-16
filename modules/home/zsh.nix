@@ -61,7 +61,34 @@
 
       setopt extended_glob
       setopt correct
+
+      # Both fzf and atuin bind Ctrl-R; load order is not guaranteed, so make
+      # atuin the winner explicitly. Ctrl-T and Alt-C stay with fzf.
+      bindkey '^R' atuin-search
     '';
+  };
+
+  # Shell history. Local-only: sync needs an explicit `atuin login`, and the
+  # update check is off so no shell start-up reaches the network.
+  programs.atuin = {
+    enable = true;
+    enableZshIntegration = true;
+    # The arrow keys already do prefix search (bound below); let atuin own
+    # Ctrl-R alone rather than taking over history navigation entirely.
+    flags = [ "--disable-up-arrow" ];
+    settings = {
+      auto_sync = false;
+      update_check = false;
+      style = "compact";
+    };
+  };
+
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+    defaultCommand = "fd --type f --hidden --exclude .git";
+    fileWidgetCommand = "fd --type f --hidden --exclude .git";
+    changeDirWidgetCommand = "fd --type d --hidden --exclude .git";
   };
 
   programs.zoxide = {

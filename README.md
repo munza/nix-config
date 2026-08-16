@@ -24,12 +24,14 @@ Built with [blueprint](https://github.com/numtide/blueprint) for auto-discovery 
 │   │   ├── homebrew.nix       # Homebrew taps, brews, casks, mas apps
 │   │   └── home-manager.nix   # home-manager settings blueprint does not set
 │   └── home/                  # home-manager modules (shared across hosts)
-│       ├── zsh.nix
+│       ├── zsh.nix            # zsh, plus atuin/fzf/zoxide integration
 │       ├── neovim/            # neovim split into sub-modules
 │       │   ├── default.nix    # core settings, opts, colorscheme
 │       │   ├── keymaps.nix    # all keybindings
 │       │   └── plugins.nix    # all plugin declarations
-│       ├── git.nix
+│       ├── git.nix            # git, with delta as the pager
+│       ├── direnv.nix         # direnv + nix-direnv
+│       ├── yazi.nix           # terminal file manager
 │       ├── ghostty.nix
 │       ├── zellij.nix
 │       ├── starship.nix

@@ -4,12 +4,14 @@
   homeModules = with inputs.self.homeModules; [
     aerospace
     clamav
+    direnv
     ghostty
     git
     lazygit
     neovim
     secrets
     starship
+    yazi
     zed
     zellij
     zsh
@@ -32,6 +34,7 @@
     gping
     gum
     httpie
+    jq
     kubectl
     llama-cpp
     lazydocker
