@@ -38,6 +38,21 @@
       splitbelow = true;
     };
 
+    # :Guide opens the README from the store. It is read-only there, which is
+    # the point: the copy you edit is the one in this repo.
+    userCommands.Guide = {
+      command.__raw = ''
+        function()
+          vim.cmd("tabedit ${./README.md}")
+          vim.opt_local.readonly = true
+          vim.opt_local.modifiable = false
+          vim.opt_local.wrap = true
+          vim.opt_local.linebreak = true
+        end
+      '';
+      desc = "Open the Neovim configuration guide";
+    };
+
     colorschemes.nightfox = {
       enable = true;
       flavor = "terafox";

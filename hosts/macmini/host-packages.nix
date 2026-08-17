@@ -68,6 +68,7 @@
       "appcleaner"
       "brave-browser"
       "bruno"
+      "claude"
       "discord"
       "ghostty"
       "gitup-app"
