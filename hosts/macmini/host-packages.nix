@@ -13,7 +13,6 @@
     starship
     yazi
     zed
-    zellij
     zsh
     zsh-functions
   ];
@@ -66,10 +65,11 @@
     ];
     casks = [
       "appcleaner"
-      "brave-browser"
       "bruno"
       "claude"
       "discord"
+      "firefox"
+      "firefox@developer-edition"
       "ghostty"
       "gitup-app"
       "google-chrome"
@@ -77,7 +77,6 @@
       "keka"
       "linear"
       "llama-app"
-      "nordpass"
       "orbstack"
       "proton-drive"
       "proton-pass"
