@@ -151,20 +151,17 @@ _: {
       # Icons come from the fallback family; see modules/home/ghostty.nix.
       ui_font_family = "Annotation Mono";
       ui_font_fallbacks = [ "Symbols Nerd Font Mono" ];
-      ui_font_size = 16;
-
       buffer_font_family = "Annotation Mono";
       buffer_font_fallbacks = [ "Symbols Nerd Font Mono" ];
-      buffer_font_size = 15;
-      buffer_line_height = {
-        custom = 1.6;
-      };
 
+      ui_font_size = 16;
+      buffer_font_size = 15;
       agent_ui_font_size = 16;
       agent_buffer_font_size = 15;
 
       use_system_window_tabs = true;
       show_whitespaces = "trailing";
+
       indent_guides = {
         enabled = true;
         coloring = "indent_aware";

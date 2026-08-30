@@ -25,10 +25,7 @@ Built with [blueprint](https://github.com/numtide/blueprint) for auto-discovery 
 │   │   └── home-manager.nix   # home-manager settings blueprint does not set
 │   └── home/                  # home-manager modules (shared across hosts)
 │       ├── zsh.nix            # zsh, plus atuin/fzf/zoxide integration
-│       ├── neovim/            # neovim split into sub-modules
-│       │   ├── default.nix    # core settings, opts, colorscheme
-│       │   ├── keymaps.nix    # all keybindings
-│       │   └── plugins.nix    # all plugin declarations
+│       ├── nixvim.nix         # neovim, via nixvim
 │       ├── git.nix            # git, with delta as the pager
 │       ├── direnv.nix         # direnv + nix-direnv
 │       ├── yazi.nix           # terminal file manager
@@ -114,7 +111,7 @@ Controls what gets installed and which home-manager modules are enabled:
 {
   # Which home-manager modules to load (from modules/home/)
   homeModules = with inputs.self.homeModules; [
-    git neovim zsh starship zellij lazygit secrets
+    git nixvim zsh starship zellij lazygit secrets
   ];
 
   # System-level packages
@@ -369,6 +366,50 @@ Shared across all hosts. Enable/disable per host via the `homeModules` list in `
 Modules that touch platform-specific paths branch on `pkgs.stdenv.hostPlatform.isDarwin` (for example [`ghostty.nix`](modules/home/ghostty.nix), where macOS takes the app from Homebrew and other platforms from nixpkgs). Modules that depend on a package the host may not install — such as [`clamav.nix`](modules/home/clamav.nix) — are kept separate so a host opts in explicitly.
 
 Each user also gets a standalone configuration: `home-manager switch --flake .#munza@macmini`.
+
+### Neovim (`modules/home/nixvim.nix`)
+
+Built with [nixvim](https://github.com/nix-community/nixvim): every plugin, option and keymap is declared in Nix and compiled into a single `init.lua` at build time. No runtime plugin manager — [mini.deps](https://github.com/echasnovski/mini.deps) is unnecessary here, since Nix already puts every plugin on disk before Neovim starts. The plugin lineup leans on [mini.nvim](https://github.com/echasnovski/mini.nvim) almost exclusively: one author, one design language, small focused modules instead of one monolithic framework.
+
+Leader is `<space>`. Press it and wait — [mini.clue](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-clue.md) pops up a which-key-style popup showing every mapping reachable from there, with a description. Pressing `<leader>` on its own is the discovery mechanism; nothing below needs to be memorised up front.
+
+**Plugins:**
+
+| Area | Plugins |
+| --- | --- |
+| Navigation | `mini.pick` (fuzzy files/grep/buffers), `mini.files` (tree explorer), `mini.bracketed`, `mini.extra` (extra pickers/textobjects), `mini.sessions` |
+| UI | `mini.statusline`, `mini.tabline`, `mini.cursorword`, `mini.notify`, `mini.animate`, `mini.clue`, `mini.starter` (dashboard) |
+| Editing | `mini.pairs`, `mini.surround`, `mini.comment`, `mini.ai` (textobjects), `mini.indentscope`, `mini.splitjoin`, `mini.move`, `mini.jump`, `mini.jump2d`, `mini.trailspace`, `mini.align`, `mini.bufremove`, `mini.completion` |
+| Highlighting | `mini.hipatterns` (TODO/FIXME/HACK/NOTE, hex color preview) |
+| Git | `mini.diff` (gutter hunk signs), `mini.git` |
+| Language | `nvim-treesitter` (highlight/indent/fold) and `nvim-lspconfig` (supplies default `cmd`/`filetypes`/`root_markers` for named servers only — it enables nothing itself; that's `lsp.servers.*.enable` below, via Neovim's native `vim.lsp.enable()`) |
+
+**LSP servers** (`lsp.servers.*`): `nixd`, `bashls`, `lua_ls`, `ts_ls`, `basedpyright`, `gopls`. `K` (hover) and the `<leader>l*` keymaps below are buffer-local — they only attach once a server actually does, via nixvim's `LspAttach`-gated `lsp.keymaps`.
+
+**Leader groups:**
+
+| Prefix | Title | Keys |
+| --- | --- | --- |
+| `<leader>b` | +Buffer | `bd` delete, `bw` wipeout, `bn`/`bp` next/previous |
+| `<leader>f` | +Find | `ff` files, `fg` grep, `fb` buffers, `fh` help tags, `fe` toggle file explorer, `fo` recent files, `fB` git branches |
+| `<leader>h` | +Help | `hk` search all keymaps (filterable) |
+| `<leader>l` | +LSP | `ld` definition, `lD` declaration, `lr` references, `li` implementation, `lt` type definition, `lf` format |
+| `<leader>s` | +Session | `ss` save (cwd), `sl` load |
+| `<leader>v` | +Visual | `vv`/`vV`/`vb` enter charwise/linewise/blockwise visual, `vg` reselect last visual, `vs` mini.surround (add/delete/replace/find/highlight), `vi`/`va` mini.ai textobjects (inside/around — follow with an object char, e.g. `<leader>vi{`) |
+| `<leader>w` | +Window | full mirror of `<C-w>`'s subcommands — focus (`hjkl`/`w`), split (`s`/`v`), reposition (`HJKL`), resize (`+-<>`/`=`), exchange/rotate (`x`/`r`/`R`), close/quit/only (`c`/`q`/`o`), `p` previous, `n` new. Focus/resize/reposition repeat without re-pressing the prefix. |
+
+**Direct aliases** — `<leader>` followed by one of these re-enters the real, unprefixed vim key (same popup you'd get pressing it bare), so muscle memory for the underlying vim feature transfers directly:
+
+| Key | Real vim feature |
+| --- | --- |
+| `<leader>'` | Jump to mark (line) |
+| `` <leader>` `` | Jump to mark (exact position) |
+| `<leader>"` | Select register for next yank/paste |
+| `<leader>[` / `<leader>]` | Previous/next (brackets, diagnostics, git hunks, etc.) |
+| `<leader>g` | Go-to commands (`gg`, `gd`, case/format operators, `gc`/`ga`/`gh`/`gS` from mini plugins, …) |
+| `<leader>z` | Fold/scroll (`za`, `zz`, `zt`, …) |
+
+A few defaults were deliberately changed: `U` is redo instead of vim's rarely-used "undo line" (matching `u`/redo symmetry), folds start fully open (`foldlevel=99` — `za`/`zc`/`zo` still work manually), and line numbers are hybrid (`number` + `relativenumber`).
 
 ## License
 

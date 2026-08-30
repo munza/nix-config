@@ -8,7 +8,7 @@
     ghostty
     git
     lazygit
-    neovim
+    nixvim
     secrets
     starship
     yazi
@@ -55,7 +55,7 @@
 
   aiTools = with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
     claude-code
-    opencode
+    pi
   ];
 
   homebrew = {
