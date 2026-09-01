@@ -7,6 +7,7 @@
     direnv
     ghostty
     git
+    herdr
     lazygit
     nixvim
     secrets
