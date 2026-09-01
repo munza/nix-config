@@ -82,35 +82,59 @@
 
           triggers = [
             {
-              mode = [ "n" "x" ];
+              mode = [
+                "n"
+                "x"
+              ];
               keys = "<leader>";
             }
             {
-              mode = [ "n" "x" ];
+              mode = [
+                "n"
+                "x"
+              ];
               keys = "g";
             }
             {
-              mode = [ "n" "x" ];
+              mode = [
+                "n"
+                "x"
+              ];
               keys = "'";
             }
             {
-              mode = [ "n" "x" ];
+              mode = [
+                "n"
+                "x"
+              ];
               keys = "`";
             }
             {
-              mode = [ "n" "x" ];
+              mode = [
+                "n"
+                "x"
+              ];
               keys = "\"";
             }
             {
-              mode = [ "n" "x" ];
+              mode = [
+                "n"
+                "x"
+              ];
               keys = "[";
             }
             {
-              mode = [ "n" "x" ];
+              mode = [
+                "n"
+                "x"
+              ];
               keys = "]";
             }
             {
-              mode = [ "n" "x" ];
+              mode = [
+                "n"
+                "x"
+              ];
               keys = "s";
             }
 

@@ -61,10 +61,6 @@
 
       setopt extended_glob
       setopt correct
-
-      # Both fzf and atuin bind Ctrl-R; load order is not guaranteed, so make
-      # atuin the winner explicitly. Ctrl-T and Alt-C stay with fzf.
-      bindkey '^R' atuin-search
     '';
   };
 
@@ -87,8 +83,11 @@
     enable = true;
     enableZshIntegration = true;
     defaultCommand = "fd --type f --hidden --exclude .git";
-    fileWidgetCommand = "fd --type f --hidden --exclude .git";
-    changeDirWidgetCommand = "fd --type d --hidden --exclude .git";
+    fileWidget.command = "fd --type f --hidden --exclude .git";
+    changeDirWidget.command = "fd --type d --hidden --exclude .git";
+    # Atuin owns Ctrl-R; this is the supported way to yield it (Ctrl-T and
+    # Alt-C stay with fzf).
+    historyWidget.command = "";
   };
 
   programs.zoxide = {

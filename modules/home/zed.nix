@@ -1,6 +1,9 @@
 _: {
   programs.zed-editor = {
     enable = true;
+    # Zed itself comes from the Homebrew cask (auto-updating); this module
+    # only manages settings.json/keymap.json, so skip the from-source nix build.
+    package = null;
 
     userKeymaps = [
       {

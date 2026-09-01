@@ -2,12 +2,12 @@
   description = "Nix configuration for MacOS";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
+    nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
-    home-manager.url = "github:nix-community/home-manager/release-26.05";
+    home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-homebrew = {
@@ -17,7 +17,7 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    nixvim.url = "github:nix-community/nixvim/nixos-26.05";
+    nixvim.url = "github:nix-community/nixvim/main";
 
     sops-nix = {
       url = "github:Mic92/sops-nix";
