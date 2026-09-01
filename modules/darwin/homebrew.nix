@@ -6,8 +6,8 @@
       enable = true;
 
       onActivation.autoUpdate = false;
-      onActivation.cleanup = "uninstall";
-      onActivation.upgrade = false;
+      onActivation.cleanup = "zap";
+      onActivation.upgrade = true;
       global.autoUpdate = false;
 
       inherit (hostPackages.homebrew) taps;

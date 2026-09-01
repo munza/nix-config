@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, pkgs, ... }:
 
 {
   imports = [ inputs.nixvim.homeModules.nixvim ];
@@ -26,6 +26,30 @@
       foldlevel = 99;
       foldlevelstart = 99;
     };
+
+    # Terafox/Dayfox everywhere (see ghostty.nix, zed.nix). Unlike rose-pine,
+    # nightfox has no single "auto" colorscheme — terafox (dark) and dayfox
+    # (light) are separate colorschemes, so auto-dark-mode-nvim below
+    # re-sources whichever one matches macOS's appearance directly.
+    colorschemes.nightfox = {
+      enable = true;
+      flavor = "terafox";
+    };
+
+    # No nixvim module for this plugin, so it's wired in by hand.
+    extraPlugins = [ pkgs.vimPlugins.auto-dark-mode-nvim ];
+    extraConfigLua = ''
+      require("auto-dark-mode").setup({
+        set_dark_mode = function()
+          vim.o.background = "dark"
+          vim.cmd.colorscheme("terafox")
+        end,
+        set_light_mode = function()
+          vim.o.background = "light"
+          vim.cmd.colorscheme("dayfox")
+        end,
+      })
+    '';
 
     plugins = {
       # Icon provider other mini.nvim UI plugins render through.

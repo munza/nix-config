@@ -117,6 +117,12 @@ _: {
         }
         {
           "if" = {
+            app-name-regex-substring = "opensuperwhisper";
+          };
+          run = [ "layout floating" ];
+        }
+        {
+          "if" = {
             app-id = "app.zen-browser.zen";
             window-title-regex-substring = "Picture-in-Picture";
           };
