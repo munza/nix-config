@@ -33,7 +33,7 @@
     # re-sources whichever one matches macOS's appearance directly.
     colorschemes.nightfox = {
       enable = true;
-      flavor = "terafox";
+      flavor = "nightfox";
     };
 
     # No nixvim module for this plugin, so it's wired in by hand.
@@ -42,7 +42,7 @@
       require("auto-dark-mode").setup({
         set_dark_mode = function()
           vim.o.background = "dark"
-          vim.cmd.colorscheme("terafox")
+          vim.cmd.colorscheme("nightfox")
         end,
         set_light_mode = function()
           vim.o.background = "light"

@@ -148,7 +148,7 @@ _: {
       theme = {
         mode = "system";
         light = "Dayfox - opaque";
-        dark = "Terafox - opaque";
+        dark = "Nightfox - opaque";
       };
 
       # Icons come from the fallback family; see modules/home/ghostty.nix.

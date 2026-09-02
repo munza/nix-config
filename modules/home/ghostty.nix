@@ -16,7 +16,7 @@ in
     enableZshIntegration = true;
 
     settings = {
-      theme = "dark:Terafox,light:Dayfox";
+      theme = "dark:Nightfox,light:Dayfox";
 
       # AnnotationMono ships no patched build, so Symbols Nerd Font Mono is fallback
       font-family = [
