@@ -23,6 +23,7 @@
     btop
     clamav
     curl
+    delve
     devenv
     docker
     duf
@@ -31,6 +32,10 @@
     fd
     gh
     gitleaks
+    go
+    golangci-lint
+    gopls
+    gotools
     gping
     gum
     httpie
