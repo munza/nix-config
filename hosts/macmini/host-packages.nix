@@ -19,44 +19,73 @@
   ];
 
   systemPackages = with pkgs; [
-    bat
+    # Essentials & utilities
     btop
-    clamav
     curl
-    delve
-    devenv
-    docker
-    duf
-    dust
-    beamPackages.elixir_1_20
-    fd
+    httpie
     gh
     gitleaks
+    gping
+    gum
+    jq
+
+    # Containers & orchestration
+    docker
+    kubectl
+    lazydocker
+
+    # Environment & native build deps
+    devenv
+    openssl
+    pkgconf
+
+    # File & system replacements
+    bat # cat
+    fd # find
+    ripgrep # grep
+    tree
+    dust # du
+    duf # df
+    procs # ps
+    trash-cli # rm
+
+    # Elixir
+    beamPackages.elixir_1_20
+
+    # Go
     go
     golangci-lint
     gopls
     gotools
-    gping
-    gum
-    httpie
-    jq
-    kubectl
-    llama-cpp
-    lazydocker
+    delve
+
+    # Nix
     nixd
     nixfmt
-    nmap
-    nodejs
-    openssl
-    pkgconf
-    procs
+
+    # Python
     python3
-    ripgrep
+    uv
+
+    # Rust
+    rustc
+    cargo
+    clippy
+    rustfmt
+    rust-analyzer
+    cargo-watch
+
+    # JavaScript
+    nodejs
+
+    # Security
+    clamav
+    nmap
     sops
     ssh-to-age
-    trash-cli
-    tree
-    uv
+
+    # Local AI
+    llama-cpp
   ];
 
   aiTools = with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [

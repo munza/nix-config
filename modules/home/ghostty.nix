@@ -18,6 +18,12 @@ in
     settings = {
       theme = "dark:Nightfox,light:Dayfox";
 
+      # Send ⌥+key as Alt/Meta so terminal apps receive the modifier.
+      macos-option-as-alt = true;
+
+      # No tab bar, no title bar (window stays resizable from the edges).
+      macos-titlebar-style = "hidden";
+
       # AnnotationMono ships no patched build, so Symbols Nerd Font Mono is fallback
       font-family = [
         "Annotation Mono"

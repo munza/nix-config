@@ -25,6 +25,12 @@
       # za/zc/zo etc. still work for manual folding.
       foldlevel = 99;
       foldlevelstart = 99;
+
+      # 4-space indentation (Neovim defaults all of these to 8).
+      tabstop = 4; # width of a literal tab character
+      shiftwidth = 4; # spaces per (auto)indent step
+      softtabstop = 4; # Tab/Backspace edit 4 spaces at a time
+      expandtab = true; # insert spaces instead of literal tabs
     };
 
     # Terafox/Dayfox everywhere (see ghostty.nix, zed.nix). Unlike rose-pine,
@@ -208,6 +214,11 @@
               keys = "<leader>w";
               desc = "+Window";
             }
+            {
+              mode = "n";
+              keys = "<leader>m";
+              desc = "+Markdown";
+            }
 
             # Repeat these <leader>w actions without re-pressing the prefix:
             # e.g. <leader>w then hh l jj keeps navigating/resizing.
@@ -358,6 +369,37 @@
       };
       mini-git.enable = true;
 
+      # Formatting (bound to <leader>lf below): conform runs an external
+      # formatter per filetype and falls back to the attached LSP server
+      # when none is configured (gopls for Go, rust-analyzer for Rust).
+      # autoInstall adds the formatter binaries to the Neovim closure.
+      conform-nvim = {
+        enable = true;
+        autoInstall.enable = true;
+        settings.formatters_by_ft = {
+          nix = [ "nixfmt" ];
+          lua = [ "stylua" ];
+          python = [ "black" ];
+          sh = [ "shfmt" ];
+          bash = [ "shfmt" ];
+          markdown = [ "prettierd" ];
+          json = [ "prettierd" ];
+          jsonc = [ "prettierd" ];
+          yaml = [ "prettierd" ];
+          html = [ "prettierd" ];
+          css = [ "prettierd" ];
+          javascript = [ "prettierd" ];
+          javascriptreact = [ "prettierd" ];
+          typescript = [ "prettierd" ];
+          typescriptreact = [ "prettierd" ];
+        };
+      };
+
+      # Markdown: pretty in-buffer preview (headings, tables, checkboxes,
+      # code blocks) rendered by default on markdown buffers. Editing still
+      # works while rendered; <leader>mp toggles raw source ↔ preview.
+      render-markdown.enable = true;
+
       # Language support: syntax-aware highlighting, indentation and folding.
       # Grammars default to nixvim's full set (all prebuilt via Nix, no
       # runtime :TSInstall needed) rather than a hand-picked subset.
@@ -379,6 +421,10 @@
     # actually does — Neovim's own built-in gr*/gO/gd already cover
     # rename/code-action/references/implementation/type-def/symbols.
     lsp = {
+      # Inlay hints (types, params, chaining) for servers that support them —
+      # rust-analyzer, gopls, lua_ls, etc.
+      inlayHints.enable = true;
+
       servers = {
         nixd.enable = true;
         bashls.enable = true;
@@ -386,6 +432,17 @@
         ts_ls.enable = true;
         basedpyright.enable = true;
         gopls.enable = true;
+        rust_analyzer = {
+          enable = true;
+          # Server settings live under the "rust-analyzer" key, not at the
+          # top level. See https://rust-analyzer.github.io/book/configuration.html
+          config."rust-analyzer" = {
+            # Clippy instead of plain `cargo check` for on-save diagnostics.
+            check.command = "clippy";
+            # Analyze all #[cfg(feature)] combinations of workspace crates.
+            cargo.features = "all";
+          };
+        };
       };
 
       keymaps = [
@@ -410,6 +467,11 @@
           options.desc = "References";
         }
         {
+          key = "<leader>lR";
+          lspBufAction = "rename";
+          options.desc = "Rename symbol";
+        }
+        {
           key = "<leader>li";
           lspBufAction = "implementation";
           options.desc = "Implementation";
@@ -418,11 +480,6 @@
           key = "<leader>lt";
           lspBufAction = "type_definition";
           options.desc = "Type definition";
-        }
-        {
-          key = "<leader>lf";
-          lspBufAction = "format";
-          options.desc = "Format buffer";
         }
       ];
     };
@@ -475,6 +532,27 @@
         key = "<leader>hk";
         action = "<cmd>lua MiniExtra.pickers.keymaps()<CR>";
         options.desc = "Keymaps";
+      }
+
+      # Format via conform (see conform-nvim above): runs the filetype's
+      # external formatter, or the LSP server's when none is configured.
+      {
+        mode = "n";
+        key = "<leader>lf";
+        action.__raw = ''
+          function()
+            require("conform").format({ async = true, lsp_format = "fallback" })
+          end
+        '';
+        options.desc = "Format buffer";
+      }
+
+      # Markdown preview ↔ raw source (see render-markdown above).
+      {
+        mode = "n";
+        key = "<leader>mp";
+        action = "<cmd>RenderMarkdown toggle<CR>";
+        options.desc = "Toggle markdown preview";
       }
 
       # Aliases into the real ' and " triggers (remap=true so the fed key
