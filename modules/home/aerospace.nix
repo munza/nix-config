@@ -9,6 +9,8 @@ _: {
     launchd.enable = true;
 
     settings = {
+      config-version = 2;
+
       start-at-login = true;
 
       # Layout
