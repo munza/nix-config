@@ -33,8 +33,11 @@
 
     # Private repo holding the SSZSPL-licensed Comic Code OTFs; fetched over
     # SSH and pinned by rev, same arrangement as the secrets input below.
+    # ssh.github.com:443 is just GitHub's SSH-over-443 endpoint; it exists so
+    # this and the secrets input use different hostnames, letting CI pin one
+    # deploy key per host (SSH cannot pick between two keys for one host).
     comic-code = {
-      url = "git+ssh://git@github.com/munza/comic-code.git";
+      url = "git+ssh://git@ssh.github.com:443/munza/comic-code.git";
       flake = false;
     };
 

@@ -80,11 +80,11 @@
         "rev": "d4076c82be0627585cbad670d86fd43ad3d4d4b1",
         "revCount": 1,
         "type": "git",
-        "url": "ssh://git@github.com/munza/comic-code.git"
+        "url": "ssh://git@ssh.github.com:443/munza/comic-code.git"
       },
       "original": {
         "type": "git",
-        "url": "ssh://git@github.com/munza/comic-code.git"
+        "url": "ssh://git@ssh.github.com:443/munza/comic-code.git"
       }
     },
     "flake-parts": {
