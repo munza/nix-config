@@ -159,9 +159,12 @@ nix-util rollback         # switch back to the previous generation
 nix-util clean            # collect garbage (user + root) and optimise the store
 ```
 
-`nix-util update` deliberately does more than `nix flake update`: it shows what
-moved in `flake.lock`, offers the full diff, and then runs the flake check, so a
-bad input is caught before it becomes a root activation. `nix-util clean`
+`nix-util update` deliberately does more than `nix flake update`: it runs the
+flake check after moving `flake.lock`, so a bad input is caught before it
+becomes a root activation. `nix-util rebuild` adds the same gate one step
+later — an nvd package diff against the running system before activation.
+`nix-util diff` shows the uncommitted lock diff whenever it is wanted.
+`nix-util clean`
 collects garbage in both the user and root profiles — only the latter frees
 system closures — keeping generations newer than 30 days (override with
 `NIX_GC_DAYS`). `nix-util check` hides Nix's warnings — blueprint emits flake

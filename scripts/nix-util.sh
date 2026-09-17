@@ -8,7 +8,7 @@
 # USAGE:
 #   nix-util                  — interactive menu
 #   nix-util rebuild          — build, diff against the running system, switch on confirm
-#   nix-util update [input]   — update flake inputs (all, or just one), show the lock diff, then check
+#   nix-util update [input]   — update flake inputs (all, or just one), then check
 #   nix-util search <term>    — search nixpkgs for a package
 #   nix-util check [-v]       — flake check; -v also shows nix warnings
 #   nix-util fmt              — format the repo with treefmt
@@ -33,9 +33,9 @@ _nu_stream() {
   if command -v nom >/dev/null 2>&1; then nom; else cat; fi
 }
 
-# Same principle as _nu_update: no activation happens unaudited. Build first,
-# show the package diff against the running system (nvd), and only activate on
-# an explicit go. The built closure stays at $FLAKE_DIR/result if declined.
+# No activation happens unaudited: build first, show the package diff
+# against the running system (nvd), and only activate on an explicit go.
+# The built closure stays at $FLAKE_DIR/result if declined.
 _nu_rebuild() {
   local builder host
   builder="$(_nu_builder)"
@@ -62,8 +62,9 @@ _nu_rebuild() {
   )
 }
 
-# Inputs run as root at switch time, so the lock diff is the review surface.
-# Always show what moved before offering to build on it.
+# Inputs run as root at switch time, so the check below is the gate that
+# keeps a bad input from ever becoming an activation. The lock diff stays
+# one `nix-util diff` away when it is wanted.
 _nu_update() {
   local input="$1"
 
@@ -79,9 +80,6 @@ _nu_update() {
     _nu_ok "already up to date; nothing moved"
     return 0
   fi
-
-  git -C "$FLAKE_DIR" diff --stat -- flake.lock
-  gum confirm "review the full lock diff?" --default=No && _nu_diff
 
   _nu_check
 }
