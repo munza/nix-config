@@ -379,7 +379,10 @@
         settings.formatters_by_ft = {
           nix = [ "nixfmt" ];
           lua = [ "stylua" ];
-          python = [ "black" ];
+          python = [ "ruff_format" ];
+          # `mix` (below) auto-installs an elixir into Neovim's PATH, but the
+          # project's own toolchain wins inside a devenv/direnv shell.
+          elixir = [ "mix" ];
           sh = [ "shfmt" ];
           bash = [ "shfmt" ];
           markdown = [ "prettierd" ];
@@ -401,10 +404,38 @@
       render-markdown.enable = true;
 
       # Language support: syntax-aware highlighting, indentation and folding.
-      # Grammars default to nixvim's full set (all prebuilt via Nix, no
-      # runtime :TSInstall needed) rather than a hand-picked subset.
+      # nixvim's default is every grammar ever built, which drags evaluation
+      # and closure size for languages never opened; pinned to the stacks
+      # this config actually installs (plus markup/config everywhere).
       treesitter = {
         enable = true;
+        grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
+          # Languages with toolchains in host-packages.nix
+          bash
+          elixir
+          go
+          javascript
+          json
+          lua
+          python
+          rust
+          toml
+          tsx
+          typescript
+          yaml
+
+          # Markup and config that every project touches
+          css
+          dockerfile
+          html
+          markdown
+          markdown_inline
+          nix
+          query
+          regex
+          vim
+          vimdoc
+        ];
         highlight.enable = true;
         indent.enable = true;
         folding.enable = true;
@@ -431,6 +462,12 @@
         lua_ls.enable = true;
         ts_ls.enable = true;
         basedpyright.enable = true;
+        # Linter/formatter half of the Python story; basedpyright above
+        # stays the type checker.
+        ruff.enable = true;
+        # Elixir: lexical's successor (lexical itself was archived upstream
+        # and removed from nixpkgs).
+        expert.enable = true;
         gopls.enable = true;
         rust_analyzer = {
           enable = true;
@@ -520,6 +557,12 @@
         key = "<leader>fo";
         action = "<cmd>lua MiniExtra.pickers.oldfiles()<CR>";
         options.desc = "Recent files";
+      }
+      {
+        mode = "n";
+        key = "<leader>dd";
+        action = "<cmd>lua MiniExtra.pickers.diagnostics({ scope = 'all' })<CR>";
+        options.desc = "Diagnostics (all buffers)";
       }
       {
         mode = "n";
