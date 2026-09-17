@@ -22,7 +22,11 @@ jobs:
   check:
     runs-on: ubuntu-24.04
     steps:
+      # Full history: gitleaks scans the whole push range, which needs the
+      # base revision a shallow clone would not have.
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - uses: webfactory/ssh-agent@v0.9.1
         with:
