@@ -65,15 +65,28 @@
         "aarch64-linux"
         "x86_64-linux"
       ];
+      inherit (inputs.nixpkgs) lib;
       blueprintOutputs = inputs.blueprint { inherit inputs systems; };
-      forEachSystem =
-        f: inputs.nixpkgs.lib.genAttrs systems (system: f inputs.nixpkgs.legacyPackages.${system});
+      forEachSystem = f: lib.genAttrs systems (system: f inputs.nixpkgs.legacyPackages.${system});
       treefmtEval = forEachSystem (pkgs: inputs.treefmt-nix.lib.evalModule pkgs ./treefmt.nix);
+
+      # Blueprint exports modules that take no publisher args (pkgs, var,
+      # hostPackages, ...) as their file location instead of a module value —
+      # a path when the source is a path, a store-path string when it comes
+      # from self.outPath. The module system happily imports either, but
+      # newer Nix's `flake check` requires every *Modules.<name> to be a
+      # function or attrset, so normalise them to imported functions.
+      asFunctions =
+        attrs: lib.mapAttrs (_: m: if builtins.isPath m || builtins.isString m then import m else m) attrs;
     in
     blueprintOutputs
     // {
+      homeModules = asFunctions blueprintOutputs.homeModules;
+      darwinModules = asFunctions blueprintOutputs.darwinModules;
+      nixosModules = asFunctions blueprintOutputs.nixosModules;
+
       formatter = forEachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
-      checks = inputs.nixpkgs.lib.recursiveUpdate blueprintOutputs.checks (
+      checks = lib.recursiveUpdate blueprintOutputs.checks (
         forEachSystem (pkgs: {
           formatting = treefmtEval.${pkgs.system}.config.build.check inputs.self;
         })
