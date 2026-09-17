@@ -11,30 +11,37 @@ Built with [blueprint](https://github.com/numtide/blueprint) for auto-discovery 
 ├── flake.nix                  # Inputs & blueprint entry point
 ├── .githooks/
 │   └── pre-commit             # gitleaks secret scan (opt in via core.hooksPath)
+├── .github/workflows/         # CI (fmt + check + leak scan) and weekly input-update PRs
 ├── treefmt.nix                # Formatter config (nixfmt, deadnix, statix, shfmt)
 ├── lib/
 │   └── default.nix            # flake.lib.hostVars — loads + validates host variables
 ├── scripts/                   # shell scripts sourced by zsh-functions
 │   ├── nix-util.sh            # everyday nix operations
 │   └── nix-secret.sh          # sops secret manager
+├── packages/                  # local packages, exposed per system by blueprint
+│   ├── annotation-mono/       # Annotation Mono with fixed style metadata
+│   └── comic-code/            # Comic Code, packaged from a private repo input
 ├── modules/
 │   ├── darwin/
 │   │   ├── system.nix         # macOS system defaults and firewall
-│   │   ├── nix.nix            # nix daemon settings (gc, experimental features)
+│   │   ├── nix.nix            # nix daemon settings (gc, caches, experimental features)
 │   │   ├── homebrew.nix       # Homebrew taps, brews, casks, mas apps
 │   │   └── home-manager.nix   # home-manager settings blueprint does not set
 │   └── home/                  # home-manager modules (shared across hosts)
-│       ├── zsh.nix            # zsh, plus atuin/fzf/zoxide integration
+│       ├── zsh.nix            # zsh, plus atuin/fzf/zoxide/eza integration
 │       ├── nixvim.nix         # neovim, via nixvim
 │       ├── git.nix            # git, with delta as the pager
+│       ├── gh.nix             # gh CLI and extensions (gh-dash)
+│       ├── nix-index.nix      # command-not-found + comma, prebuilt database
 │       ├── direnv.nix         # direnv + nix-direnv
 │       ├── yazi.nix           # terminal file manager
 │       ├── ghostty.nix
-│       ├── zellij.nix
 │       ├── starship.nix
 │       ├── lazygit.nix
 │       ├── zed.nix
 │       ├── aerospace.nix      # macOS window manager
+│       ├── clamav.nix         # on-demand AV scanning
+│       ├── herdr.nix
 │       ├── zsh-functions.nix  # sources scripts/ for interactive commands
 │       └── secrets.nix        # sops-nix declarations and shell variables
 └── hosts/
@@ -139,7 +146,7 @@ directory. Run it bare for a menu.
 
 ```sh
 nix-util                  # interactive menu
-nix-util rebuild          # build and switch this host
+nix-util rebuild          # build, diff against the running system, switch on confirm
 nix-util update           # update every flake input
 nix-util update nixpkgs   # update one input
 nix-util search ripgrep   # search nixpkgs

@@ -1,0 +1,42 @@
+# CI — mirrors the local gates (gitleaks pre-commit, nix fmt, nix flake check)
+# so nothing reaches main unaudited from another machine.
+#
+# The private flake inputs (secrets, comic-code) are fetched over SSH with
+# per-repo read-only deploy keys; both private halves live in the
+# SSH_DEPLOY_KEY secret (two keys, newline-separated).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_DEPLOY_KEY }}
+
+      - uses: DeterminateSystems/nix-installer-action@v17
+
+      - name: Leak scan
+        uses: gitleaks/gitleaks-action@v2
+
+      - name: Format check
+        run: nix run .#formatter.x86_64-linux -- --fail-on-change
+
+      # Same invocation as `nix-util check`: evaluates every host's full
+      # closure (darwin and linux) without building.
+      - name: Flake check
+        run: nix flake check . --all-systems --no-build

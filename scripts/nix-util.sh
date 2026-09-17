@@ -7,7 +7,7 @@
 #
 # USAGE:
 #   nix-util                  — interactive menu
-#   nix-util rebuild          — build and switch this host
+#   nix-util rebuild          — build, diff against the running system, switch on confirm
 #   nix-util update [input]   — update flake inputs (all, or just one), show the lock diff, then check
 #   nix-util search <term>    — search nixpkgs for a package
 #   nix-util check [-v]       — flake check; -v also shows nix warnings
@@ -28,9 +28,38 @@ _nu_info() { gum style --foreground 4 "$*"; }
 _nu_builder() { echo "${NIX_BUILDER:-darwin-rebuild}"; }
 _nu_host() { echo "${NIX_HOST:-$(hostname -s)}"; }
 
+# Stream builder output through nom when present, unfiltered otherwise.
+_nu_stream() {
+  if command -v nom >/dev/null 2>&1; then nom; else cat; fi
+}
+
+# Same principle as _nu_update: no activation happens unaudited. Build first,
+# show the package diff against the running system (nvd), and only activate on
+# an explicit go. The built closure stays at $FLAKE_DIR/result if declined.
 _nu_rebuild() {
-  _nu_info "switching $(_nu_host) via $(_nu_builder)"
-  sudo "$(_nu_builder)" switch --flake "$FLAKE_DIR#$(_nu_host)"
+  local builder host
+  builder="$(_nu_builder)"
+  host="$(_nu_host)"
+
+  _nu_info "building $host via $builder"
+  (
+    set -o pipefail
+    cd "$FLAKE_DIR"
+    "$builder" build --flake "$FLAKE_DIR#$host" |& _nu_stream
+  ) || return 1
+
+  command -v nvd >/dev/null 2>&1 && nvd diff /run/current-system "$FLAKE_DIR/result"
+
+  gum confirm "switch $host to this configuration?" --default=No || {
+    _nu_ok "kept the running generation; build left at $FLAKE_DIR/result"
+    return 0
+  }
+
+  _nu_info "switching $host via $builder"
+  (
+    set -o pipefail
+    sudo "$builder" switch --flake "$FLAKE_DIR#$host" |& _nu_stream
+  )
 }
 
 # Inputs run as root at switch time, so the lock diff is the review surface.
