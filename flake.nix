@@ -15,6 +15,13 @@
       inputs.brew-src.url = "github:Homebrew/brew";
     };
 
+    # Prebuilt nix-index database, so command-not-found and comma work
+    # without an expensive local indexing run.
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     llm-agents.url = "github:numtide/llm-agents.nix";
 
     nixvim.url = "github:nix-community/nixvim/main";

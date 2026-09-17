@@ -6,9 +6,11 @@
     clamav
     direnv
     ghostty
+    gh
     git
     herdr
     lazygit
+    nix-index
     nixvim
     secrets
     starship
@@ -23,11 +25,11 @@
     btop
     curl
     httpie
-    gh
     gitleaks
     gping
     gum
     jq
+    tealdeer # tldr pages, offline
 
     # Containers & orchestration
     docker
@@ -62,6 +64,8 @@
     # Nix
     nixd
     nixfmt
+    nom # nix-output-monitor, wired into nix-util rebuild
+    nvd # closure diffs, wired into nix-util rebuild
 
     # Python
     python3

@@ -4,14 +4,26 @@
 }:
 
 {
+  # What every "opens an editor" tool (git rebase, gh, atuin search,
+  # gum) should reach for. nixvim installs nvim.
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+  };
+
+  programs.eza = {
+    enable = true;
+    icons = "auto"; # glyphs resolve through the Symbols Nerd Font fallback
+  };
+
   programs.zsh = {
     enable = true;
     autocd = true;
     enableCompletion = true;
 
     history = {
-      size = 10000;
-      save = 10000;
+      size = 50000;
+      save = 50000;
       ignoreDups = true;
       share = true;
     };
@@ -38,7 +50,7 @@
     shellAliases = {
       nx = "nix-util";
       nxs = "nix-secret";
-      ll = "ls -lah";
+      ll = "eza -lah --git";
       ".." = "cd ..";
       "..." = "cd ../..";
     };

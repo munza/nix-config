@@ -3,7 +3,6 @@
   inputs,
   hostName,
   pkgs,
-  lib,
   ...
 }:
 
@@ -25,7 +24,6 @@ in
   ];
 
   nixpkgs.hostPlatform = var.host.platform;
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ ];
 
   networking.hostName = var.host.name;
 
