@@ -2,6 +2,17 @@
 
 {
   config = {
+    # Fingerprint unlock for sudo, where the attached keyboard has a reader;
+    # harmless (plain password prompt) where it does not.
+    security.pam.services.sudo_local.touchIdAuth = true;
+
+    # Caps Lock is only ever pressed by accident; Vim and AeroSpace both want
+    # one more Esc within reach instead.
+    system.keyboard = {
+      enableKeyMapping = true;
+      remapCapsLockToEscape = true;
+    };
+
     system = {
       primaryUser = var.user.name;
 

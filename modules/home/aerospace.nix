@@ -123,13 +123,6 @@ _: {
           };
           run = [ "layout floating" ];
         }
-        {
-          "if" = {
-            app-id = "app.zen-browser.zen";
-            window-title-regex-substring = "Picture-in-Picture";
-          };
-          run = [ "layout floating" ];
-        }
       ];
     };
   };
