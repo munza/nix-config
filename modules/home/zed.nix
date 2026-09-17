@@ -152,9 +152,9 @@ _: {
       };
 
       # Icons come from the fallback family; see modules/home/ghostty.nix.
-      ui_font_family = "Annotation Mono";
+      ui_font_family = "Comic Code Ligatures";
       ui_font_fallbacks = [ "Symbols Nerd Font Mono" ];
-      buffer_font_family = "Annotation Mono";
+      buffer_font_family = "Comic Code Ligatures";
       buffer_font_fallbacks = [ "Symbols Nerd Font Mono" ];
 
       ui_font_size = 16;

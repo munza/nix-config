@@ -124,6 +124,7 @@
 
   fonts = with pkgs; [
     inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.annotation-mono
+    inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.comic-code
     # Icon glyphs for fonts that ship no patched build, used as a fallback
     # family rather than baked into each font.
     nerd-fonts.symbols-only

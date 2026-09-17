@@ -71,6 +71,22 @@
         "type": "github"
       }
     },
+    "comic-code": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789636269,
+        "narHash": "sha256-pFfQao4tGTvpgYiepBExeg8Zhu8Umtq9q9j0wC8A8Ms=",
+        "ref": "refs/heads/main",
+        "rev": "d4076c82be0627585cbad670d86fd43ad3d4d4b1",
+        "revCount": 1,
+        "type": "git",
+        "url": "ssh://git@github.com/munza/comic-code.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/munza/comic-code.git"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -267,6 +283,7 @@
     "root": {
       "inputs": {
         "blueprint": "blueprint",
+        "comic-code": "comic-code",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
         "nix-darwin": "nix-darwin",

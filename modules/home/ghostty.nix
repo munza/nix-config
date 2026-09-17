@@ -26,7 +26,7 @@ in
 
       # AnnotationMono ships no patched build, so Symbols Nerd Font Mono is fallback
       font-family = [
-        "Annotation Mono"
+        "Comic Code Ligatures"
         "Symbols Nerd Font Mono"
       ];
       font-size = 15;

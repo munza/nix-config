@@ -24,6 +24,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Private repo holding the SSZSPL-licensed Comic Code OTFs; fetched over
+    # SSH and pinned by rev, same arrangement as the secrets input below.
+    comic-code = {
+      url = "git+ssh://git@github.com/munza/comic-code.git";
+      flake = false;
+    };
+
     # Private repo; ciphertext deliberately kept out of this public one.
     # Managed with `nix-secret`, which keeps a working checkout separately.
     secrets = {
