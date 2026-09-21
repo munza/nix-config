@@ -15,6 +15,14 @@
       inputs.brew-src.url = "github:Homebrew/brew";
     };
 
+    # Third-party brew tap, pinned by rev. With mutableTaps = false the tap
+    # can't be cloned at activation time, so it lives in the store taps env;
+    # declared in nix-homebrew.taps in darwin-configuration.nix.
+    orca-tap = {
+      url = "github:stablyai/homebrew-orca";
+      flake = false;
+    };
+
     # Prebuilt nix-index database, so command-not-found and comma work
     # without an expensive local indexing run.
     nix-index-database = {

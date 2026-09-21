@@ -34,6 +34,16 @@ in
     enableRosetta = true;
     user = var.user.name;
     mutableTaps = false;
+
+    # mutableTaps = false makes /opt/homebrew/Library/Taps a read-only store
+    # path, so every tap the Brewfile references (homebrew.taps) must be
+    # pinned here or brew bundle cannot clone it at activation time. The key
+    # is a direct user/repo -> Library/Taps/user/repo mapping, so it must use
+    # the GitHub repo name (homebrew-orca), not the tap name; brew stores tap
+    # "stablyai/orca" at Library/Taps/stablyai/homebrew-orca.
+    taps = {
+      "stablyai/homebrew-orca" = inputs.orca-tap;
+    };
   };
 
   environment.systemPackages = hostPackages.systemPackages ++ hostPackages.aiTools;

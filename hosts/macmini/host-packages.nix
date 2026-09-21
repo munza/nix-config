@@ -64,7 +64,7 @@
     # Nix
     nixd
     nixfmt
-    nom # nix-output-monitor, wired into nix-util rebuild
+    nix-output-monitor # 'nom' build stream, wired into nix-util rebuild
     nvd # closure diffs, wired into nix-util rebuild
 
     # Python
@@ -94,11 +94,14 @@
 
   aiTools = with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
     claude-code
+    codex
     pi
   ];
 
   homebrew = {
-    taps = [ ];
+    taps = [
+      "stablyai/orca"
+    ];
     brews = [
       "herdr"
     ];
@@ -120,6 +123,7 @@
       "protonvpn"
       "raycast"
       "slack"
+      "stablyai/orca/orca"
       "tailscale-app"
       "zed"
     ];

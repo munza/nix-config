@@ -28,9 +28,15 @@ _nu_info() { gum style --foreground 4 "$*"; }
 _nu_builder() { echo "${NIX_BUILDER:-darwin-rebuild}"; }
 _nu_host() { echo "${NIX_HOST:-$(hostname -s)}"; }
 
-# Stream builder output through nom when present, unfiltered otherwise.
+# Stream builder output through nom when present, unfiltered otherwise. There
+# is more than one "nom" in nixpkgs (an RSS reader ships the same binary
+# name), so only use it when it identifies itself as nix-output-monitor.
 _nu_stream() {
-  if command -v nom >/dev/null 2>&1; then nom; else cat; fi
+  if command -v nom >/dev/null 2>&1 && nom --version 2>&1 | grep -q '^nix-output-monitor'; then
+    nom
+  else
+    cat
+  fi
 }
 
 # No activation happens unaudited: build first, show the package diff
